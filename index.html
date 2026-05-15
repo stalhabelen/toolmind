@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ToolMind: VLM-Guided Spatial Reasoning for Robotic Tool Use</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Noto+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Noto Sans', sans-serif; font-size: 16px; line-height: 1.7; color: #222; background: #fff; }
+.container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+/* NAV */
+nav { background: #fff; border-bottom: 1px solid #e8e8e8; padding: 12px 0; position: sticky; top: 0; z-index: 100; }
+nav .inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+.nav-brand { display: flex; align-items: center; gap: 10px; font-family: 'Google Sans', sans-serif; font-size: 15px; font-weight: 700; color: #1a3a7a; }
+.nav-logo { height: 32px; width: 32px; object-fit: contain; }
+.nav-links { display: flex; gap: 24px; }
+.nav-links a { font-size: 14px; color: #555; text-decoration: none; transition: color 0.2s; }
+.nav-links a:hover { color: #111; }
+
+/* HERO */
+.hero { padding: 64px 0 48px; text-align: center; }
+.hero-logos { display: flex; align-items: center; justify-content: center; gap: 14px; margin-bottom: 22px; }
+.hero-logo { height: 60px; width: 60px; object-fit: contain; }
+.hero-logo-placeholder { height: 60px; width: 60px; border-radius: 50%; background: #f0f4ff; border: 2px solid #c8d8f8; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #4285f4; font-family: 'Google Sans', sans-serif; font-weight: 600; text-align: center; line-height: 1.3; padding: 4px; }
+.venue-tag { display: inline-block; background: #f0f4ff; color: #1a3a7a; font-size: 13px; font-weight: 500; padding: 4px 14px; border-radius: 20px; margin-bottom: 18px; font-family: 'Google Sans', sans-serif; }
+h1 { font-family: 'Google Sans', sans-serif; font-size: clamp(22px, 3.5vw, 38px); font-weight: 700; line-height: 1.2; color: #111; margin-bottom: 26px; letter-spacing: -0.01em; }
+.authors { font-size: 15px; color: #333; margin-bottom: 6px; line-height: 2.2; }
+.authors a { color: #4285f4; text-decoration: none; margin: 0 6px; }
+.authors a:hover { text-decoration: underline; }
+.author-mark { color: #1a3a7a; font-weight: 700; margin-left: 2px; }
+.author-note { font-size: 12.5px; color: #777; margin-bottom: 20px; line-height: 1.6; }
+.author-note a { color: #4285f4; text-decoration: none; }
+.author-note a:hover { text-decoration: underline; }
+.author-note .author-mark { margin-right: 4px; }
+.affiliations { font-size: 14px; color: #888; margin-bottom: 12px; }
+.btn-row { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 14px; }
+.btn { display: inline-flex; align-items: center; gap: 7px; font-family: 'Google Sans', sans-serif; font-size: 14px; font-weight: 500; padding: 9px 20px; border-radius: 8px; text-decoration: none; border: 1.5px solid #d0d0d0; color: #333; background: #fff; transition: all 0.2s; }
+.btn:hover { border-color: #aaa; background: #f8f8f8; }
+.btn.primary { background: #111; color: #fff; border-color: #111; }
+.btn.primary:hover { background: #333; }
+.btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* VIDEO */
+.video-placeholder { width: 100%; aspect-ratio: 16/9; background: #f3f4f6; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; border: 1.5px dashed #ccc; color: #999; font-size: 14px; }
+.video-main { width: 100%; aspect-ratio: 16/9; display: block; background: #f3f4f6; border-radius: 12px; border: 1px solid #e4e4e4; object-fit: contain; }
+.video-help { text-align: center; font-size: 12.5px; color: #888; margin-top: 8px; }
+.play-icon { width: 56px; height: 56px; border-radius: 50%; background: rgba(0,0,0,0.07); display: flex; align-items: center; justify-content: center; }
+.play-icon svg { width: 24px; height: 24px; fill: #888; margin-left: 3px; }
+.video-caption { text-align: center; font-size: 14px; color: #777; margin-top: 14px; font-style: italic; }
+
+/* SECTIONS */
+section { padding: 64px 0; border-top: 1px solid #efefef; }
+h2 { font-family: 'Google Sans', sans-serif; font-size: 28px; font-weight: 700; color: #111; margin-bottom: 20px; text-align: center; }
+h3 { font-family: 'Google Sans', sans-serif; font-size: 20px; font-weight: 600; color: #222; margin-bottom: 12px; margin-top: 40px; }
+h3:first-of-type { margin-top: 0; }
+p { color: #444; margin-bottom: 14px; }
+p:last-child { margin-bottom: 0; }
+
+/* SPACING FIXES */
+.pipeline-steps + h3 { margin-top: 72px; }
+#scenarios .scenario-grid + h3 { margin-top: 72px; }
+#scenarios .scenario-detail + h3 { margin-top: 64px; }
+#results > .container > h3:first-of-type { margin-top: 48px; }
+#results .table-wrap + h3 { margin-top: 76px; }
+#results h3 { margin-bottom: 18px; }
+#results h3 + p { margin-bottom: 24px; }
+
+
+/* ABSTRACT */
+.abstract-box { background: #f8f9fc; border-left: 4px solid #4285f4; border-radius: 0 8px 8px 0; padding: 28px 32px; margin-top: 8px; }
+.abstract-box p { color: #333; font-size: 15.5px; line-height: 1.8; margin-bottom: 14px; }
+.abstract-box p:last-child { margin-bottom: 0; }
+
+
+/* CONTRIBUTIONS */
+.contribution-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 24px; }
+.contribution-card { border: 1px solid #e8ecf5; border-radius: 10px; padding: 18px 20px; background: #fafbff; }
+.contribution-card h4 { font-family: 'Google Sans', sans-serif; font-size: 14px; font-weight: 600; color: #1a3a7a; margin-bottom: 6px; }
+.contribution-card p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 0; }
+.result-note-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 22px; }
+.result-note { border: 1px solid #e8ecf5; border-radius: 10px; padding: 16px 18px; background: #fafbff; }
+.result-note h4 { font-family: 'Google Sans', sans-serif; font-size: 13.5px; font-weight: 600; color: #1a3a7a; margin-bottom: 6px; }
+.result-note p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 0; }
+.metric-list { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-top: 18px; }
+.metric-card { background: #fff; border: 1px solid #e8ecf5; border-radius: 10px; padding: 14px 16px; }
+.metric-card strong { font-family: 'Google Sans', sans-serif; font-size: 13px; color: #111; display: block; margin-bottom: 4px; }
+.metric-card span { font-size: 12.5px; color: #666; line-height: 1.5; display: block; }
+
+/* TEASER */
+.teaser-statement { font-family: 'Google Sans', sans-serif; font-size: 19px; font-weight: 500; color: #222; text-align: center; line-height: 1.55; max-width: 720px; margin: 0 auto; }
+.teaser-statement strong { color: #4285f4; }
+
+/* PIPELINE */
+.pipeline-steps { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-top: 28px; }
+.pipe-card { background: #f8f9fc; border-radius: 10px; padding: 22px 16px; text-align: center; border: 1px solid #e8ecf5; }
+.pipe-num { font-family: 'Google Sans', sans-serif; font-size: 11px; font-weight: 700; color: #4285f4; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.pipe-icon { font-size: 28px; margin-bottom: 10px; }
+.pipe-title { font-family: 'Google Sans', sans-serif; font-size: 13.5px; font-weight: 600; color: #111; margin-bottom: 6px; }
+.pipe-desc { font-size: 12px; color: #777; line-height: 1.5; margin-bottom: 0; }
+
+
+
+/* METHOD VISUAL PIPELINE */
+.method-visual-wrap { margin-top: 34px; padding: 26px 22px; border: 1px solid #e8ecf5; border-radius: 14px; background: #fbfcff; }
+.method-visual-title { font-family: 'Google Sans', sans-serif; font-size: 18px; font-weight: 600; color: #111; text-align: center; margin-bottom: 8px; }
+.method-visual-subtitle { font-size: 13px; color: #777; text-align: center; max-width: 720px; margin: 0 auto 22px; }
+.flow-strip { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 22px; }
+.flow-pill { font-family: 'Google Sans', sans-serif; font-size: 12px; font-weight: 600; color: #1a3a7a; background: #eef3ff; border: 1px solid #d7e3ff; border-radius: 999px; padding: 8px 12px; }
+.flow-arrow { color: #4285f4; font-size: 22px; font-weight: 700; line-height: 1; }
+.method-visual-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+.method-visual-card { background: #fff; border: 1px solid #e8ecf5; border-radius: 12px; padding: 16px; }
+.method-visual-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
+.method-visual-stage { font-family: 'Google Sans', sans-serif; font-size: 11px; font-weight: 700; color: #4285f4; letter-spacing: 0.08em; text-transform: uppercase; }
+.method-visual-label { font-family: 'Google Sans', sans-serif; font-size: 14px; font-weight: 600; color: #111; }
+.method-image-slot { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 10px; overflow: hidden; background: #f4f6fb; border: 1px dashed #cfd8e6; display: flex; align-items: center; justify-content: center; }
+.method-image-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
+.method-image-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; padding: 14px; color: #8b96a8; text-align: center; }
+.method-image-placeholder .upload-icon { width: 38px; height: 38px; border-radius: 50%; background: #e8f0fe; color: #4285f4; display: flex; align-items: center; justify-content: center; font-size: 20px; font-family: 'Google Sans', sans-serif; }
+.method-image-placeholder strong { font-family: 'Google Sans', sans-serif; font-size: 12.5px; color: #5a6475; }
+.method-image-placeholder span { font-size: 10.5px; color: #929db0; line-height: 1.4; }
+.method-visual-card p { font-size: 12.5px; color: #666; line-height: 1.55; margin-top: 10px; margin-bottom: 0; }
+
+/* VLM ROLES */
+.vlm-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+.vlm-role-card { border: 1px solid #e8ecf5; border-radius: 10px; padding: 20px; background: #fafbff; }
+.vlm-role-card h5 { font-family: 'Google Sans', sans-serif; font-size: 13.5px; font-weight: 600; color: #1a3a7a; margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+.vlm-role-card p { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 0; }
+
+/* COT */
+.cot-steps { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+.cot-step { display: flex; gap: 16px; align-items: flex-start; padding: 18px 20px; background: #f8f9fc; border-radius: 10px; border: 1px solid #e8ecf5; }
+.cot-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; background: #4285f4; color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; font-family: 'Google Sans', sans-serif; }
+.cot-body h5 { font-family: 'Google Sans', sans-serif; font-size: 13.5px; font-weight: 600; color: #111; margin-bottom: 3px; }
+.cot-body p { font-size: 13px; color: #666; margin-bottom: 0; }
+.cot-example { margin-top: 18px; border: 1px solid #e8ecf5; border-radius: 12px; background: #fafbff; padding: 16px; }
+.cot-example h4 { font-family: 'Google Sans', sans-serif; font-size: 15px; font-weight: 600; color: #111; margin-bottom: 8px; }
+.cot-example p { font-size: 13px; color: #666; margin-bottom: 12px; }
+.cot-example img { width: 100%; border-radius: 10px; border: 1px solid #e2e6ef; display: block; }
+.cot-img-placeholder { display: none; width: 100%; aspect-ratio: 16/9; border-radius: 10px; border: 1px dashed #cfd8e6; background: #f4f6fb; color: #8b96a8; align-items: center; justify-content: center; text-align: center; padding: 20px; font-size: 13px; line-height: 1.6; }
+.cot-caption { font-size: 12px; color: #777; margin-top: 10px; line-height: 1.55; }
+code { font-family: 'Courier New', monospace; font-size: 12.5px; background: #eef2fa; color: #3a5bd4; padding: 1px 6px; border-radius: 4px; }
+
+/* PROMPT LEVELS */
+.prompt-levels { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; margin-top: 20px; }
+.prompt-card { border: 1px solid #e8e8e8; border-radius: 10px; padding: 20px; }
+.prompt-card.best { border-color: #4285f4; background: #f8fbff; }
+.prompt-label { font-family: 'Google Sans', sans-serif; font-size: 15px; font-weight: 700; color: #111; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+.best-badge { font-size: 10px; background: #4285f4; color: #fff; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.prompt-card p { font-size: 13px; color: #666; margin-bottom: 0; }
+
+/* SCENARIOS */
+.scenario-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; margin-top: 28px; }
+.scenario-vid { border-radius: 10px; overflow: hidden; border: 1px solid #e8e8e8; background: #fff; }
+.scenario-thumb { width: 100%; aspect-ratio: 4/3; background: #f3f4f6; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+.scenario-thumb.photo-slot { position: relative; overflow: hidden; flex-direction: column; gap: 8px; font-size: 13px; color: #8a8a8a; text-align: center; padding: 22px; }
+.scenario-thumb.photo-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 2; }
+.photo-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; height: 100%; max-width: 220px; }
+.photo-placeholder .upload-icon { width: 42px; height: 42px; border-radius: 50%; background: #e8f0fe; color: #4285f4; display: flex; align-items: center; justify-content: center; font-size: 22px; font-family: 'Google Sans', sans-serif; }
+.photo-placeholder strong { font-family: 'Google Sans', sans-serif; font-size: 13px; color: #555; }
+.photo-placeholder span { font-size: 11.5px; color: #999; line-height: 1.35; }
+.scenario-info { padding: 14px 16px; }
+.scenario-info h4 { font-family: 'Google Sans', sans-serif; font-size: 14px; font-weight: 600; color: #111; margin-bottom: 5px; }
+.scenario-info p { font-size: 12.5px; color: #666; line-height: 1.55; margin-bottom: 8px; }
+.tag { display: inline-block; font-size: 11px; background: #f0f4ff; color: #4285f4; padding: 3px 9px; border-radius: 4px; font-family: 'Google Sans', sans-serif; font-weight: 500; }
+
+
+.rollout-card { border-radius: 10px; overflow: hidden; border: 1px solid #e8e8e8; background: #fff; }
+.rollout-video { width: 100%; aspect-ratio: 4/3; display: block; background: #f3f4f6; object-fit: cover; }
+.rollout-info { padding: 12px 12px 14px; }
+.rollout-info h4 { font-family: 'Google Sans', sans-serif; font-size: 13.5px; font-weight: 600; color: #111; margin-bottom: 0; text-align: center; }
+.rollout-info p { font-size: 12px; color: #777; line-height: 1.45; margin-bottom: 0; }
+.extra-video-grid { grid-template-columns: repeat(2, minmax(280px, 420px)); justify-content: center; }
+
+/* SCENARIO DETAIL CARDS */
+.scenario-detail { border: 1px solid #e8e8e8; border-radius: 12px; padding: 28px 32px; margin-top: 20px; }
+.scenario-detail + .scenario-detail { margin-top: 16px; }
+.scenario-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.scenario-detail-icon { font-size: 28px; }
+.scenario-detail-header h4 { font-family: 'Google Sans', sans-serif; font-size: 17px; font-weight: 600; color: #111; margin-bottom: 2px; }
+.scenario-detail-header .stag { font-size: 11px; background: #f0f4ff; color: #4285f4; padding: 2px 8px; border-radius: 4px; font-family: 'Google Sans', sans-serif; font-weight: 500; }
+.vlm-contrib { background: #f0f8f0; border-left: 3px solid #34a853; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-top: 12px; }
+.vlm-contrib-label { font-family: 'Google Sans', sans-serif; font-size: 11px; font-weight: 700; color: #1e7e34; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.vlm-contrib p { font-size: 13px; color: #333; margin-bottom: 0; line-height: 1.65; }
+
+/* TABLES */
+.table-wrap { overflow-x: auto; margin-top: 20px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+thead tr { border-bottom: 2px solid #222; }
+thead th { font-family: 'Google Sans', sans-serif; font-size: 12px; font-weight: 600; color: #555; text-align: left; padding: 10px 14px; letter-spacing: 0.04em; text-transform: uppercase; }
+tbody td { padding: 11px 14px; border-bottom: 1px solid #efefef; color: #333; }
+tbody tr:hover td { background: #fafafa; }
+.row-highlight td { font-weight: 600; color: #111; }
+.row-highlight td:first-child { color: #4285f4; }
+.tbd { color: #bbb; font-style: italic; font-size: 13px; }
+.method-tag { display: inline-block; font-family: 'Google Sans', sans-serif; font-size: 12px; font-weight: 600; background: #f0f0f0; padding: 2px 9px; border-radius: 4px; color: #444; }
+.method-tag.best-tag { background: #e8f0fe; color: #4285f4; }
+.shelf-rollout-table-wrap { max-width: 760px; margin: 28px auto 0; overflow-x: auto; }
+.shelf-rollout-table { width: 100%; border-collapse: collapse; font-size: 13.5px; border-top: 2px solid #222; border-bottom: 2px solid #222; }
+.shelf-rollout-table caption { caption-side: top; text-align: left; font-family: 'Google Sans', sans-serif; font-size: 15px; font-weight: 600; color: #111; margin-bottom: 10px; }
+.shelf-rollout-table thead tr { border-bottom: 1.5px solid #222; }
+.shelf-rollout-table th, .shelf-rollout-table td { padding: 10px 14px; text-align: center; border-bottom: none; }
+.shelf-rollout-table th:first-child, .shelf-rollout-table td:first-child { text-align: left; }
+.shelf-rollout-table .section-row td { padding-top: 14px; padding-bottom: 5px; font-style: italic; color: #333; border-top: 1.5px solid #222; }
+.shelf-rollout-table .total-row td { border-top: 1.5px solid #222; padding-top: 12px; }
+
+/* TEAM */
+.team-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; margin-top: 28px; }
+.team-card { display: flex; gap: 14px; align-items: flex-start; padding: 20px; border: 1px solid #e8e8e8; border-radius: 10px; }
+.avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #1a3a7a, #4285f4); color: #fff; font-family: 'Google Sans', sans-serif; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.team-name { font-family: 'Google Sans', sans-serif; font-size: 14.5px; font-weight: 600; color: #111; margin-bottom: 4px; }
+.team-desc { font-size: 12.5px; color: #666; line-height: 1.55; margin-bottom: 0; }
+
+/* BIBTEX */
+.bibtex-box { background: #1e1e2e; border-radius: 10px; padding: 28px 32px; margin-top: 20px; overflow-x: auto; }
+.bibtex-box pre { font-family: 'Courier New', monospace; font-size: 13px; color: #cdd6f4; line-height: 1.7; white-space: pre-wrap; }
+.bib-key { color: #89dceb; }
+.bib-field { color: #cba6f7; }
+.bib-val { color: #a6e3a1; }
+
+/* FOOTER */
+footer { border-top: 1px solid #efefef; padding: 32px 0; text-align: center; }
+footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
+
+@media (max-width: 700px) {
+  .pipeline-steps { grid-template-columns: repeat(2,1fr); }
+  .method-visual-grid { grid-template-columns: 1fr; }
+  .flow-strip { gap: 8px; }
+  .flow-arrow { font-size: 18px; }
+  .scenario-grid, .prompt-levels, .team-grid, .vlm-roles, .contribution-grid, .result-note-grid, .metric-list, .extra-video-grid { grid-template-columns: 1fr; }
+  .scenario-detail { padding: 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="inner">
+    <div class="nav-brand">
+      <!-- Replace src with your actual logo path after uploading to repo -->
+      <img src="bilkent_logo.png" alt="Bilkent University" class="nav-logo" onerror="this.style.display='none'">
+      Learning for Robotics
+    </div>
+    <div class="nav-links">
+      <a href="ToolMind_Final_Report.pdf" target="_blank" rel="noopener noreferrer">Paper</a>
+      <a href="#abstract">Abstract</a>
+      <a href="#method">Method</a>
+      <a href="#scenarios">Scenarios</a>
+      <a href="#results">Results</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-logos">
+      <!-- Replace src with your actual logo path after uploading to repo -->
+      <img src="bilkent_logo.png" alt="Bilkent University" class="hero-logo" onerror="this.outerHTML='<div class=\'hero-logo-placeholder\'>Bilkent Logo</div>'">
+    </div>
+    <div class="venue-tag">Bilkent University · 2026</div>
+    <h1>ToolMind:<br>VLM-Guided Spatial Reasoning for Robotic Tool Use</h1>
+    <p class="authors">
+      <a href="https://stalhabelen.github.io" target="_blank" rel="noopener noreferrer">Süleyman Talha Belen</a><sup class="author-mark">*</sup>
+      <a href="https://www.linkedin.com/in/yusuf-buğra-yazıcıoğlu-88a582246/" target="_blank" rel="noopener noreferrer">Yusuf Buğra Yazıcıoğlu</a>
+      <a href="https://www.linkedin.com/in/yunus-emre-kök-1a9525361/" target="_blank" rel="noopener noreferrer">Yunus Emre Kök</a>
+      <a href="https://www.linkedin.com/in/mehmet-emin-yakşi-22983a225/" target="_blank" rel="noopener noreferrer">Mehmet Emin Yakşi</a>
+    </p>
+    <p class="affiliations">Department of Electrical and Electronics Engineering, Bilkent University</p>
+    <p class="author-note"><sup class="author-mark">*</sup><a href="https://github.com/stalhabelen" target="_blank" rel="noopener noreferrer">github.com/stalhabelen</a></p>
+    <div class="btn-row">
+      <a class="btn primary" href="ToolMind_Final_Report.pdf" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        Paper (PDF)
+      </a>
+      <a class="btn" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+        Code
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN VIDEO -->
+<div style="padding: 0 0 64px; border-top: 1px solid #efefef;">
+  <div class="container" style="padding-top: 48px;">
+    <video class="video-main" controls muted playsinline preload="metadata" poster="toolmind_intro_poster.png">
+      <source src="toolmind_overview_demo.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+    <p class="video-caption">Full ToolMind overview demo across all three constrained manipulation scenarios: wall retrieval, screwdriver insertion, and shelf retrieval.</p>
+  </div>
+</div>
+
+<!-- TEASER -->
+<div style="padding: 48px 0; border-top: 1px solid #efefef; border-bottom: 1px solid #efefef; background: #fafbff;">
+  <div class="container">
+    <p class="teaser-statement">
+      We couple <strong>VLM semantic reasoning (GPT-5.5)</strong> with <strong>depth-based geometric refinement</strong> to drive multi-phase robotic tool use. ToolMind uses <strong>Structured Chain-of-Thought prompting</strong> to mitigate spatial myopia, while DBSCAN cluster labels and depth back-projection turn VLM outputs into actionable 3D keypoints.
+    </p>
+  </div>
+</div>
+
+<!-- ABSTRACT -->
+<section id="abstract">
+  <div class="container">
+    <h2>Abstract</h2>
+    <div class="abstract-box">
+      <p>ToolMind is a dual-modality pipeline for scenario-specific sequential robotic tool use. Given RGB-D observations of a tabletop scene, the system identifies the correct tool, predicts valid grasp and functional contact keypoints, and executes a multi-phase manipulation sequence. GPT-5.5 handles semantic scene understanding, tool selection, structured keypoint reasoning, and waypoint generation, while a depth-based geometric module refines coarse VLM outputs into precise 3D keypoints.</p>
+      <p>The central challenge is <em>spatial myopia</em>: VLMs often regress keypoints toward object centroids instead of the task-relevant extremities needed for tool use. We mitigate this with a Structured Chain-of-Thought JSON prompting strategy that forces geometry → grasp anchor → contact tip reasoning before coordinate regression. The resulting keypoints drive KOMO-based trajectory optimization in a simulated Franka Emika Panda environment across wall retrieval, screwdriver insertion, and shelf retrieval tasks.</p>
+      <p>The pipeline requires no task-specific VLM retraining and operates in an open-world style: DBSCAN-derived cluster labels and per-cluster geometry summaries anchor the model's attention, while depth back-projection, point-cloud snapping, PCA geometry, and antipodal search convert VLM predictions into physically feasible robot actions.</p>
+    </div>
+
+    <h3>Key Contributions</h3>
+    <div class="contribution-grid">
+      <div class="contribution-card">
+        <h4>Cluster-anchored VLM reasoning</h4>
+        <p>DBSCAN clusters are projected back to RGB views as labelled regions, turning open image regression into a structured selection-and-localization problem.</p>
+      </div>
+      <div class="contribution-card">
+        <h4>Structured CoT against spatial myopia</h4>
+        <p>The prompt requires explicit geometry, grasp-anchor, and contact-tip reasoning before GPT-5.5 is allowed to output coordinates.</p>
+      </div>
+      <div class="contribution-card">
+        <h4>Depth-based 3D refinement</h4>
+        <p>VLM pixels are lifted through the registered depth channel, snapped to the selected tool point cloud, and refined with PCA and antipodal search.</p>
+      </div>
+      <div class="contribution-card">
+        <h4>Scenario-specific KOMO execution</h4>
+        <p>The refined keypoints guide grasping, positioning, and execution phases for pull, insert/rotate, and sweep/push manipulation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section id="method">
+  <div class="container">
+    <h2>Method</h2>
+    <p style="text-align:center; color:#666; max-width:640px; margin: 0 auto;">Four tightly-coupled stages connect raw RGB-D perception to physics-based trajectory execution. GPT-5.5 acts as the semantic backbone — selecting tools, predicting keypoints, and generating motion planning waypoints.</p>
+
+    <div class="pipeline-steps">
+      <div class="pipe-card">
+        <div class="pipe-num">Stage 01</div>
+        <div class="pipe-icon">📷</div>
+        <div class="pipe-title">Scene Perception</div>
+        <p class="pipe-desc">RGB-D capture from top-down + oblique views. Depth back-projected to 3D. DBSCAN clustering, alphabetic object labeling.</p>
+      </div>
+      <div class="pipe-card">
+        <div class="pipe-num">Stage 02</div>
+        <div class="pipe-icon">🧠</div>
+        <div class="pipe-title">VLM Reasoning</div>
+        <p class="pipe-desc">GPT-5.5 receives annotated RGB + cluster summaries. Outputs tool label, grasp region, contact pixel, and motion planning waypoints via CoT prompting.</p>
+      </div>
+      <div class="pipe-card">
+        <div class="pipe-num">Stage 03</div>
+        <div class="pipe-icon">📐</div>
+        <div class="pipe-title">Geometric Refinement</div>
+        <p class="pipe-desc">Contact pixel back-projected to 3D via depth channel. PCA axis estimation, antipodal grasp search, vector-based tool orientation.</p>
+      </div>
+      <div class="pipe-card">
+        <div class="pipe-num">Stage 04</div>
+        <div class="pipe-icon">🤖</div>
+        <div class="pipe-title">KOMO Execution</div>
+        <p class="pipe-desc">Multi-phase trajectory optimization: grasp → position → execute. Collision avoidance + joint-limit constraints on Franka Panda.</p>
+      </div>
+    </div>
+
+    <div class="method-visual-wrap">
+      <div class="method-visual-title">Illustrative Intermediate Outputs</div>
+      <p class="method-visual-subtitle">The original stage summary stays above. Below, you can directly show four example figures: DBSCAN + point cloud, clusters, VLM output for grasp, and VLM waypoint generation.</p>
+
+      <div class="method-visual-grid">
+        <div class="method-visual-card">
+          <div class="method-visual-head">
+            <span class="method-visual-stage">Stage 01</span>
+            <span class="method-visual-label">DBSCAN + point cloud</span>
+          </div>
+          <div class="method-image-slot">
+            <img src="fig1_dbscan_pointcloud.png" alt="DBSCAN + point cloud" onerror="this.style.display='none'">
+            <div class="method-image-placeholder">
+              <div class="upload-icon">＋</div>
+              <strong>DBSCAN + point cloud</strong>
+              <span>Upload as <code>fig1_dbscan_pointcloud.png</code></span>
+            </div>
+          </div>
+          <p>Back-projected scene point cloud before semantic reasoning.</p>
+        </div>
+
+        <div class="method-visual-card">
+          <div class="method-visual-head">
+            <span class="method-visual-stage">Stage 02</span>
+            <span class="method-visual-label">Clusters</span>
+          </div>
+          <div class="method-image-slot">
+            <img src="fig2_clusters_vlm.png" alt="Clustered scene output" onerror="this.style.display='none'">
+            <div class="method-image-placeholder">
+              <div class="upload-icon">＋</div>
+              <strong>Cluster labeling</strong>
+              <span>Upload as <code>fig2_clusters_vlm.png</code></span>
+            </div>
+          </div>
+          <p>DBSCAN clusters and alphabetic object labels prepared for the VLM.</p>
+        </div>
+
+        <div class="method-visual-card">
+          <div class="method-visual-head">
+            <span class="method-visual-stage">Stage 03</span>
+            <span class="method-visual-label">VLM output for grasp</span>
+          </div>
+          <div class="method-image-slot">
+            <img src="fig3_vlm_grasp.png" alt="VLM grasp output" onerror="this.style.display='none'">
+            <div class="method-image-placeholder">
+              <div class="upload-icon">＋</div>
+              <strong>VLM output for grasp</strong>
+              <span>Upload as <code>fig3_vlm_grasp.png</code></span>
+            </div>
+          </div>
+          <p>Annotated VLM prediction for tool selection, grasp region, and functional contact pixel.</p>
+        </div>
+
+        <div class="method-visual-card">
+          <div class="method-visual-head">
+            <span class="method-visual-stage">Stage 04</span>
+            <span class="method-visual-label">VLM waypoint generation</span>
+          </div>
+          <div class="method-image-slot">
+            <img src="fig4_vlm_waypoint.png" alt="VLM waypoint output" onerror="this.style.display='none'">
+            <div class="method-image-placeholder">
+              <div class="upload-icon">＋</div>
+              <strong>VLM waypoint generation</strong>
+              <span>Upload as <code>fig4_vlm_waypoint.png</code></span>
+            </div>
+          </div>
+          <p>VLM-generated semantic waypoints that later guide the KOMO trajectory optimization.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Depth Channel: 2D Pixel → 3D World</h3>
+    <p>The VLM operates on RGB images and outputs pixel coordinates <code>[u, v]</code>. These are lifted to 3D world-frame keypoints using the depth channel via camera intrinsics.</p>
+    <p>The resulting camera-frame point is transformed to world coordinates using the camera extrinsics. The VLM-predicted functional contact pixel is back-projected this way and then snapped to the nearest point on the selected tool's point cloud, yielding the refined 3D contact keypoint <em>c</em>.</p>
+
+    <h3>VLM's Role in Motion Planning</h3>
+    <p>Beyond tool selection and keypoint prediction, GPT-5.5 serves as a semantic motion planning assistant — providing waypoints that guide the KOMO trajectory optimizer for each scenario.</p>
+
+    <div class="vlm-roles">
+      <div class="vlm-role-card">
+        <h5>🗺️ Waypoint Generation</h5>
+        <p>The VLM is queried for approach angles, target positions, and directional vectors. These serve as semantic waypoints that constrain the KOMO optimizer's trajectory phases.</p>
+      </div>
+      <div class="vlm-role-card">
+        <h5>🔄 Multi-Query Re-Planning</h5>
+        <p>The VLM is queried multiple times during execution — e.g., to determine a drag endpoint or an updated cup position after sweeping — enabling closed-loop semantic guidance.</p>
+      </div>
+      <div class="vlm-role-card">
+        <h5>📍 Orientation Estimation</h5>
+        <p>For constrained spaces, the VLM identifies key geometric points (A, B for sweep direction; G, C for tool axis) that drive vector-based tool orientation alignment.</p>
+      </div>
+      <div class="vlm-role-card">
+        <h5>🧩 Semantic Scene Understanding</h5>
+        <p>VLM analyzes cluster positions, object identities, and spatial relationships to reason about which side to approach from and how far objects must be moved to become reachable.</p>
+      </div>
+    </div>
+
+    <h3>Structured Chain-of-Thought Prompting</h3>
+    <p>To counter spatial myopia, the JSON schema mandates three explicit reasoning steps before any coordinate regression is allowed:</p>
+    <div class="cot-steps">
+      <div class="cot-step">
+        <div class="cot-num">1</div>
+        <div class="cot-body">
+          <h5><code>step1_geometry_analysis</code></h5>
+          <p>Describe the physical shape of the selected tool and locate its extreme boundaries in the image.</p>
+        </div>
+      </div>
+      <div class="cot-step">
+        <div class="cot-num">2</div>
+        <div class="cot-body">
+          <h5><code>step2_grasp_location</code></h5>
+          <p>Identify the exact region designated for robotic contact — e.g., "the right-most end of the stick".</p>
+        </div>
+      </div>
+      <div class="cot-step">
+        <div class="cot-num">3</div>
+        <div class="cot-body">
+          <h5><code>step3_contact_tip_location</code></h5>
+          <p>Using the grasp location as anchor, deduce the exact opposite functional extremity. Only then is the pixel coordinate <code>[u, v]</code> requested.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cot-example">
+      <h4>Example: Shelf scenario reasoning for C-point localization</h4>
+      <p>This figure illustrates how the Chain-of-Thought prompt guides the model to find the functional contact point <em>C</em> in the shelf scenario by first identifying tool extremities, then anchoring the grasp, and finally selecting the distal pushing tip.</p>
+      <img src="CoT.png" alt="Chain-of-Thought example for shelf scenario C-point reasoning" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="cot-img-placeholder">Upload the example figure as <code>CoT.png</code><br>to show the shelf scenario C-point reasoning image here.</div>
+      <p class="cot-caption">Illustrative example of the reasoning process used to avoid spatial myopia when predicting the functional contact point for the shelf task.</p>
+    </div>
+
+    <h3>Prompt Levels (P0 – P3)</h3>
+    <div class="prompt-levels">
+      <div class="prompt-card">
+        <div class="prompt-label">P0 — Minimal</div>
+        <p>Single instruction: select a tool and output pixel coordinates. No schema, no task context.</p>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-label">P1 — Structured</div>
+        <p>Defined JSON schema with named fields for tool, grasp region, pixel coordinates, and confidence. No scenario context.</p>
+      </div>
+      <div class="prompt-card">
+        <div class="prompt-label">P2 — Scenario-Aware</div>
+        <p>P1 plus full scene context and, where applicable, calibrated handle coordinate hints from <code>gt.json</code>.</p>
+      </div>
+      <div class="prompt-card best">
+        <div class="prompt-label">P3 — Anti-Failure <span class="best-badge">BEST</span></div>
+        <p>P2 plus explicit anti-failure constraints such as "do not grasp the functional tip" and self-check reasoning fields.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIOS -->
+<section id="scenarios">
+  <div class="container">
+    <h2>Evaluation Scenarios</h2>
+    <p style="text-align:center; color:#666; max-width:600px; margin:0 auto;">Three constrained tabletop manipulation tasks. Each scenario details the specific role GPT-5.5 plays in guiding motion planning beyond mere tool selection.</p>
+
+    <div class="scenario-grid">
+      <div class="scenario-vid">
+        <div class="scenario-thumb photo-slot">
+          <!-- Put your image file next to this HTML file with this name, or change the src path below. -->
+          <img src="scenario1_wall_retrieval.png" alt="Scenario 1 Wall Retrieval" onerror="this.style.display='none'">
+          <div class="photo-placeholder">
+            <div class="upload-icon">＋</div>
+            <strong>Scenario 1 image</strong>
+            <span>Upload as <code>scenario1_wall_retrieval.png</code><br>or replace the image path.</span>
+          </div>
+        </div>
+        <div class="scenario-info">
+          <h4>Scenario 1 · Wall Retrieval</h4>
+          <p>Target object behind a rigid wall, retrieved by grasping one end of a rigid tool and dragging.</p>
+          <span class="tag">PULL</span>
+        </div>
+      </div>
+      <div class="scenario-vid">
+        <div class="scenario-thumb photo-slot">
+          <!-- Put your image file next to this HTML file with this name, or change the src path below. -->
+          <img src="scenario2_screwdriver_insertion.png" alt="Scenario 2 Screwdriver Insertion" onerror="this.onerror=null; this.src='scenario2_screwdriver_rotation.png';">
+          <div class="photo-placeholder">
+            <div class="upload-icon">＋</div>
+            <strong>Scenario 2 image</strong>
+            <span>Upload as <code>scenario2_screwdriver_insertion.png</code><br>or replace the image path.</span>
+          </div>
+        </div>
+        <div class="scenario-info">
+          <h4>Scenario 2 · Screwdriver Insertion</h4>
+          <p>Rotational actuation of a target using a screwdriver-like tool with a VLM-determined rotation waypoint.</p>
+          <span class="tag">INSERT / ROTATE</span>
+        </div>
+      </div>
+      <div class="scenario-vid">
+        <div class="scenario-thumb photo-slot">
+          <!-- Put your image file next to this HTML file with this name, or change the src path below. -->
+          <img src="scenario3_shelf_retrieval.png" alt="Scenario 3 Shelf Retrieval" onerror="this.style.display='none'">
+          <div class="photo-placeholder">
+            <div class="upload-icon">＋</div>
+            <strong>Scenario 3 image</strong>
+            <span>Upload as <code>scenario3_shelf_retrieval.png</code><br>or replace the image path.</span>
+          </div>
+        </div>
+        <div class="scenario-info">
+          <h4>Scenario 3 · Shelf Retrieval</h4>
+          <p>Cup under a low-clearance shelf swept out with vector-aligned tool orientation and brought into the robot's reachable workspace.</p>
+          <span class="tag">SWEEP → GRASP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DETAILED VLM CONTRIBUTIONS PER SCENARIO -->
+    <h3>VLM Contributions per Scenario</h3>
+
+    <div class="scenario-detail">
+      <div class="scenario-detail-header">
+        <div class="scenario-detail-icon">🧱</div>
+        <div>
+          <h4>Scenario 1: Wall Retrieval (Pulling)</h4>
+          <span class="stag">PULL · Tip Localization</span>
+        </div>
+      </div>
+      <p style="font-size:14px; color:#444;">A target object is placed behind a rigid wall, beyond the robot's direct reach. The system selects a long, rigid tool, grasps it from one end, and uses the opposite tip to drag the object into the reachable workspace. The primary geometric challenge is accurate functional tip localization: the contact point must be at the far end of the tool, not its center.</p>
+      <div class="vlm-contrib">
+        <div class="vlm-contrib-label">VLM's role in motion planning</div>
+        <p>During the motion planning stage, the VLM semantically understands the environment and performs semantic planning over the detected clusters. It is queried to determine the approach angle and the direction in which the functional tip should be oriented — acting as a waypoint generator. The functional tip is then aligned toward this VLM-defined point. Afterwards, the VLM is queried a second time to determine how far the target must be dragged so that it becomes reachable by the robot, providing a drag endpoint waypoint that terminates the pull motion.</p>
+      </div>
+    </div>
+
+    <div class="scenario-detail">
+      <div class="scenario-detail-header">
+        <div class="scenario-detail-icon">🔩</div>
+        <div>
+          <h4>Scenario 2: Screwdriver Insertion</h4>
+          <span class="stag">INSERT / ROTATE · Non-translational Planning</span>
+        </div>
+      </div>
+      <p style="font-size:14px; color:#444;">A target object requires actuation via a rotational motion. The VLM selects a screwdriver-like tool from the segmented point cloud clusters, and the best antipodal grasp point is computed within the VLM-specified handle region.</p>
+      <div class="vlm-contrib">
+        <div class="vlm-contrib-label">VLM's role in motion planning</div>
+        <p>The VLM analyzes the scene and determines an appropriate rotation waypoint for the screwing motion. This waypoint is also used to align the tool along the vertical axis before the screw motion begins. Once the functional tip (back-projected to 3D from the VLM's contact pixel via the depth channel) reaches the target position, the KOMO planner executes the rotational trajectory. The VLM thus guides a non-translational end-effector motion entirely through semantic scene reasoning.</p>
+      </div>
+    </div>
+
+    <div class="scenario-detail">
+      <div class="scenario-detail-header">
+        <div class="scenario-detail-icon">📦</div>
+        <div>
+          <h4>Scenario 3: Shelf Retrieval (Sweeping)</h4>
+          <span class="stag">SWEEP → GRASP · Constrained Insertion</span>
+        </div>
+      </div>
+      <p style="font-size:14px; color:#444;">A cup placed under a low-clearance shelf cannot initially be reached by the robot. The robot must navigate a pushing tool through the narrow gap and sweep the cup into a position within the robot's reachable workspace. This is the most geometrically constrained scenario: incorrect tool orientation causes shelf collisions or joint-limit violations.</p>
+      <div class="vlm-contrib">
+        <div class="vlm-contrib-label">VLM's role in motion planning</div>
+        <p>The VLM is queried in a Chain-of-Thought manner to identify the functional tip (C) and grasp point (G), constructing the tool axis vector <strong>GC</strong>. It also determines two points A and B behind the shelf edges — one near the robot side, one at the far side — defining the sweep direction vector <strong>AB</strong>. The tool orientation is then adjusted until <strong>AB</strong> ⊥ <strong>GC</strong> (computed via dot product), preventing shelf collisions. The robot sweeps with the tool guided by the VLM-defined point A and height. After sweeping, the cup is brought into a position within the robot's reachable workspace. This multi-query VLM strategy makes the pipeline robust to domain randomization and varying initial tool placements.</p>
+      </div>
+    </div>
+
+    <h3>Scenario Rollouts (Simulation)</h3>
+    <div class="scenario-grid">
+      <div class="rollout-card">
+        <video class="rollout-video" controls muted playsinline preload="metadata">
+          <source src="rollout_wall_retrieval.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="rollout-info">
+          <h4>Wall Retrieval</h4>
+        </div>
+      </div>
+      <div class="rollout-card">
+        <video class="rollout-video" controls muted playsinline preload="metadata">
+          <source src="rollout_screwdriver_insertion.mp4" type="video/mp4">
+          <source src="rollout_screwdriver_rotation.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="rollout-info">
+          <h4>Screwdriver Insertion</h4>
+        </div>
+      </div>
+      <div class="rollout-card">
+        <video class="rollout-video" controls muted playsinline preload="metadata">
+          <source src="rollout_shelf_retrieval.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="rollout-info">
+          <h4>Shelf Retrieval</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <div class="container">
+    <h2>Results</h2>
+    <p style="text-align:center; color:#666; max-width:680px; margin:0 auto;">Prompt ablation over three scenarios, three scenes per scenario, and five repeated GPT-5.5 calls per scene/prompt pair. Table values follow the final report: Hit = grasp region hit rate, AFR = antipodal feasibility rate, and Var = grasp center variance.</p>
+
+    <h3>Table I · Prompt Ablation Results</h3>
+    <p>Richer context generally improves spatial grounding, but the best prompt is scenario-dependent. P2/P3 are strongest for wall retrieval, P3 is preferred for screwdriver insertion when explainable handle reasoning is needed, and P2 is the safest option for shelf retrieval.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Scenario</th><th>Prompt</th><th>Description</th><th>Tool Acc.</th><th>Hit</th><th>AFR</th><th>Var</th></tr>
+        </thead>
+        <tbody>
+          <tr><td rowspan="4">Wall</td><td><span class="method-tag">P0</span></td><td>Minimal</td><td>1.00</td><td>0.00</td><td>0.00</td><td>290 mm</td></tr>
+          <tr><td><span class="method-tag">P1</span></td><td>Structured</td><td>1.00</td><td>0.00</td><td>0.13</td><td>151 mm</td></tr>
+          <tr><td><span class="method-tag best-tag">P2 ★</span></td><td>Scenario-aware</td><td>1.00</td><td>0.80</td><td>0.80</td><td>36 mm</td></tr>
+          <tr><td><span class="method-tag best-tag">P3 ★</span></td><td>Anti-failure</td><td>0.93</td><td>0.80</td><td>0.80</td><td>21 mm</td></tr>
+
+          <tr><td rowspan="4">Screwdriver</td><td><span class="method-tag">P0</span></td><td>Minimal</td><td>1.00</td><td>0.87</td><td>0.60</td><td>17.0 mm</td></tr>
+          <tr><td><span class="method-tag">P1</span></td><td>Structured</td><td>1.00</td><td>0.67</td><td>0.67</td><td>0.0 mm</td></tr>
+          <tr><td><span class="method-tag">P2</span></td><td>Scenario-aware</td><td>1.00</td><td>0.40</td><td>0.47</td><td>5.1 mm</td></tr>
+          <tr><td><span class="method-tag best-tag">P3 ★</span></td><td>Anti-failure</td><td>1.00</td><td>0.67</td><td>0.67</td><td>0.0 mm</td></tr>
+
+          <tr><td rowspan="4">Shelf</td><td><span class="method-tag">P0</span></td><td>Minimal</td><td>1.00</td><td>1.00</td><td>1.00</td><td>&lt;1 px</td></tr>
+          <tr><td><span class="method-tag">P1</span></td><td>Structured</td><td>1.00</td><td>0.67</td><td>1.00</td><td>70.9 px</td></tr>
+          <tr class="row-highlight"><td><span class="method-tag best-tag">P2 ★</span></td><td>Scenario-aware</td><td>1.00</td><td>1.00</td><td>1.00</td><td>&lt;1 px</td></tr>
+          <tr><td><span class="method-tag best-tag">P3 ★</span></td><td>Anti-failure</td><td>1.00</td><td>1.00</td><td>1.00</td><td>&lt;1 px</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Metrics</h3>
+    <div class="metric-list">
+      <div class="metric-card"><strong>Tool Selection Accuracy</strong><span>Fraction of runs selecting the correct tool cluster.</span></div>
+      <div class="metric-card"><strong>Grasp Region Hit Rate</strong><span>Fraction of refined grasp points inside the ground-truth handle region.</span></div>
+      <div class="metric-card"><strong>Tool-Only Crop Ratio</strong><span>Fraction of local crop points belonging to the selected tool.</span></div>
+      <div class="metric-card"><strong>Antipodal Feasibility Rate</strong><span>Fraction of runs where a valid antipodal grasp pair is found.</span></div>
+      <div class="metric-card"><strong>Grasp Center Variance</strong><span>Mean deviation of grasp centers across repeated VLM calls.</span></div>
+      <div class="metric-card"><strong>Region Label Consistency</strong><span>Majority fraction of the VLM's predicted grasp-region label.</span></div>
+    </div>
+
+    <h3>Shelf Rollout Analysis</h3>
+    <div class="result-note-grid">
+      <div class="result-note">
+        <h4>With Structured CoT</h4>
+        <p>In the shelf scenario, 6 out of 10 rollouts are successful. Among the 4 failures, 2 are caused by selecting the wrong A–B shelf-edge pair, while the other 2 occur because the predicted C point is placed on the same tool end as the grasp instead of the opposite functional tip.</p>
+      </div>
+      <div class="result-note">
+        <h4>Before CoT</h4>
+        <p>Before adding the Chain-of-Thought reasoning, only 3 out of 10 shelf rollouts were successful. The main failure mode was spatial myopia: C was often predicted near the grasp region instead of the distal contact tip. In those failures, 2 came from the wrong A–B edge pair and 5 came from incorrect C-point selection.</p>
+      </div>
+    </div>
+
+    <div class="shelf-rollout-table-wrap">
+      <table class="shelf-rollout-table">
+        <caption>Table II: Shelf-Retrieval End-to-End Rollout Analysis (10 rollouts, P2)</caption>
+        <thead>
+          <tr>
+            <th></th>
+            <th>With CoT (P2)</th>
+            <th>Without CoT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Successful rollouts</td>
+            <td>6 / 10</td>
+            <td>3 / 10</td>
+          </tr>
+          <tr class="section-row">
+            <td colspan="3">Failure breakdown</td>
+          </tr>
+          <tr>
+            <td>Wrong A–B edge pair</td>
+            <td>2</td>
+            <td>2</td>
+          </tr>
+          <tr>
+            <td>C placed at same end as grasp</td>
+            <td>2</td>
+            <td>5</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total failures</td>
+            <td>4</td>
+            <td>7</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Additional Result Videos</h3>
+    <div class="scenario-grid extra-video-grid">
+      <div class="rollout-card">
+        <video class="rollout-video" controls muted playsinline preload="metadata">
+          <source src="result_best_p3_demo.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="rollout-info">
+          <h4>Best Prompt Demo</h4>
+        </div>
+      </div>
+      <div class="rollout-card">
+        <video class="rollout-video" controls muted playsinline preload="metadata">
+          <source src="result_failure_cases.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <div class="rollout-info">
+          <h4>Failure / Ablation Cases</h4>
+        </div>
+      </div>
+    </div>
+
+    <h3>Key Findings</h3>
+    <div class="result-note-grid">
+      <div class="result-note">
+        <h4>Cluster labels make tool selection stable</h4>
+        <p>With annotated DBSCAN clusters, tool selection is almost trivial across all scenarios: all prompts reach 1.00 tool accuracy except one P3 wall outlier.</p>
+      </div>
+      <div class="result-note">
+        <h4>Wall retrieval needs coordinate grounding</h4>
+        <p>P0/P1 fail to hit the handle region, while P2/P3 raise hit rate to 0.80 and reduce variance from 290 mm to 21–36 mm.</p>
+      </div>
+      <div class="result-note">
+        <h4>P1 is unreliable</h4>
+        <p>P1 fails completely in the wall case and is the weakest shelf prompt because its structured field can push the grasp point off the tool for some orientations.</p>
+      </div>
+      <div class="result-note">
+        <h4>Prompt choice is scenario-dependent</h4>
+        <p>P2 is strongest when calibrated coordinate hints are available, while P3 is useful when explainable spatial reasoning and self-checking are more important.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BIBTEX -->
+<section>
+  <div class="container">
+    <h2>BibTeX</h2>
+    <div class="bibtex-box">
+      <pre><span class="bib-key">@inproceedings</span>{belen2026toolmind,
+  <span class="bib-field">title</span>     = {<span class="bib-val">ToolMind: VLM-Guided Spatial Reasoning for Robotic Tool Use</span>},
+  <span class="bib-field">author</span>    = {<span class="bib-val">Belen, Süleyman Talha and Yazıcıoğlu, Yusuf Buğra and
+               Kök, Yunus Emre and Yakşi, Mehmet Emin</span>},
+  <span class="bib-field">booktitle</span> = {<span class="bib-val">CS 449 Final Report, Bilkent University</span>},
+  <span class="bib-field">year</span>      = {<span class="bib-val">2026</span>},
+}</pre>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>CS 449 Project · Bilkent University, Department of Electrical and Electronics Engineering · 2026</p>
+    <p>GPT-5.5 · Franka Emika Panda · RAI / KOMO · DBSCAN · PCA</p>
+  </div>
+</footer>
+
+</body>
+</html>

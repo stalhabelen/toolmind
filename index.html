@@ -451,8 +451,8 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
         <p>The VLM is queried for approach angles, target positions, and directional vectors. These serve as semantic waypoints that constrain the KOMO optimizer's trajectory phases.</p>
       </div>
       <div class="vlm-role-card">
-        <h5>🔄 Multi-Query Re-Planning</h5>
-        <p>The VLM is queried multiple times during execution — e.g., to determine a drag endpoint or an updated cup position after sweeping — enabling closed-loop semantic guidance.</p>
+        <h5>🔄 Multi-Query Tip Localization</h5>
+        <p>The VLM is queried multiple times to identify the functional tool tip or contact point from annotated views and cluster context. This is especially useful for selecting the distal end opposite the grasp region instead of treating the grasp side as the contact tip.</p>
       </div>
       <div class="vlm-role-card">
         <h5>📍 Orientation Estimation</h5>

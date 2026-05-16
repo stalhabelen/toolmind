@@ -234,6 +234,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
   .scenario-detail { padding: 20px; }
 }
 </style>
+<!-- Synced with FinalReportCS449.pdf -->
 </head>
 <body>
 
@@ -246,7 +247,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
       Learning for Robotics
     </div>
     <div class="nav-links">
-      <a href="ToolMind_Final_Report.pdf" target="_blank" rel="noopener noreferrer">Paper</a>
+      <a href="FinalReportCS449.pdf" target="_blank" rel="noopener noreferrer">Paper</a>
       <a href="#abstract">Abstract</a>
       <a href="#method">Method</a>
       <a href="#scenarios">Scenarios</a>
@@ -266,18 +267,18 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
     <h1>ToolMind:<br>VLM-Guided Spatial Reasoning for Robotic Tool Use</h1>
     <p class="authors">
       <a href="https://stalhabelen.github.io" target="_blank" rel="noopener noreferrer">Süleyman Talha Belen</a><sup class="author-mark">*</sup>
-      <a href="https://www.linkedin.com/in/yusuf-buğra-yazıcıoğlu-88a582246/" target="_blank" rel="noopener noreferrer">Yusuf Buğra Yazıcıoğlu</a>
       <a href="https://www.linkedin.com/in/yunus-emre-kök-1a9525361/" target="_blank" rel="noopener noreferrer">Yunus Emre Kök</a>
+      <a href="https://www.linkedin.com/in/yusuf-buğra-yazıcıoğlu-88a582246/" target="_blank" rel="noopener noreferrer">Yusuf Buğra Yazıcıoğlu</a>
       <a href="https://www.linkedin.com/in/mehmet-emin-yakşi-22983a225/" target="_blank" rel="noopener noreferrer">Mehmet Emin Yakşi</a>
     </p>
     <p class="affiliations">Department of Electrical and Electronics Engineering, Bilkent University</p>
     <p class="author-note"><sup class="author-mark">*</sup><a href="https://github.com/stalhabelen" target="_blank" rel="noopener noreferrer">github.com/stalhabelen</a></p>
     <div class="btn-row">
-      <a class="btn primary" href="ToolMind_Final_Report.pdf" target="_blank" rel="noopener noreferrer">
+      <a class="btn primary" href="FinalReportCS449.pdf" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
         Paper (PDF)
       </a>
-      <a class="btn" href="#">
+      <a class="btn" href="https://github.com/stalhabelen/ToolMind-VLM-Guided-Spatial-Reasoning-for-Robotic-Tool-Use" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
         Code
       </a>
@@ -310,7 +311,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
   <div class="container">
     <h2>Abstract</h2>
     <div class="abstract-box">
-      <p>ToolMind is a dual-modality pipeline for scenario-specific sequential robotic tool use. Given RGB-D observations of a tabletop scene, the system identifies the correct tool, predicts valid grasp and functional contact keypoints, and executes a multi-phase manipulation sequence. GPT-5.5 handles semantic scene understanding, tool selection, structured keypoint reasoning, and waypoint generation, while a depth-based geometric module refines coarse VLM outputs into precise 3D keypoints.</p>
+      <p>ToolMind is a dual-modality pipeline for scenario-specific sequential robotic tool use. Given RGB-D observations of a tabletop scene, the system identifies the correct tool, predicts task-relevant grasp, functional contact, and waypoint keypoints, and executes a multi-phase manipulation sequence. GPT-5.5 handles semantic scene understanding, tool selection, structured keypoint reasoning, and waypoint generation, while a depth-based geometric module refines coarse VLM outputs into precise 3D keypoints.</p>
       <p>The central challenge is <em>spatial myopia</em>: VLMs often regress keypoints toward object centroids instead of the task-relevant extremities needed for tool use. We mitigate this with a Structured Chain-of-Thought JSON prompting strategy that forces geometry → grasp anchor → contact tip reasoning before coordinate regression. The resulting keypoints drive KOMO-based trajectory optimization in a simulated Franka Emika Panda environment across wall retrieval, screwdriver insertion, and shelf retrieval tasks.</p>
       <p>The pipeline requires no task-specific VLM retraining and operates in an open-world style: DBSCAN-derived cluster labels and per-cluster geometry summaries anchor the model's attention, while depth back-projection, point-cloud snapping, PCA geometry, and antipodal search convert VLM predictions into physically feasible robot actions.</p>
     </div>
@@ -385,7 +386,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
             <div class="method-image-placeholder">
               <div class="upload-icon">＋</div>
               <strong>DBSCAN + point cloud</strong>
-              <span>Upload as <code>fig1_dbscan_pointcloud.png</code></span>
+              <span>DBSCAN scene point cloud</span>
             </div>
           </div>
           <p>Back-projected scene point cloud before semantic reasoning.</p>
@@ -401,7 +402,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
             <div class="method-image-placeholder">
               <div class="upload-icon">＋</div>
               <strong>Cluster labeling</strong>
-              <span>Upload as <code>fig2_clusters_vlm.png</code></span>
+              <span>Projected cluster labels</span>
             </div>
           </div>
           <p>DBSCAN clusters and alphabetic object labels prepared for the VLM.</p>
@@ -417,7 +418,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
             <div class="method-image-placeholder">
               <div class="upload-icon">＋</div>
               <strong>VLM output for grasp</strong>
-              <span>Upload as <code>fig3_vlm_grasp.png</code></span>
+              <span>VLM grasp/contact output</span>
             </div>
           </div>
           <p>Annotated VLM prediction for tool selection, grasp region, and functional contact pixel.</p>
@@ -433,7 +434,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
             <div class="method-image-placeholder">
               <div class="upload-icon">＋</div>
               <strong>VLM waypoint generation</strong>
-              <span>Upload as <code>fig4_vlm_waypoint.png</code></span>
+              <span>VLM waypoint output</span>
             </div>
           </div>
           <p>VLM-generated semantic waypoints that later guide the KOMO trajectory optimization.</p>
@@ -666,42 +667,97 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
 <section id="results">
   <div class="container">
     <h2>Results</h2>
-    <p style="text-align:center; color:#666; max-width:680px; margin:0 auto;">Prompt ablation over three scenarios, three scenes per scenario, and five repeated GPT-5.5 calls per scene/prompt pair. Table values follow the final report: Hit = grasp region hit rate, AFR = antipodal feasibility rate, and Var = grasp center variance.</p>
+    <p style="text-align:center; color:#666; max-width:720px; margin:0 auto;">We evaluate prompt detail, visual cluster grounding, and model size. Annotated mode uses DBSCAN-derived labels and bounding boxes, while raw mode removes these anchors. Metrics follow the final report: Tool = correct tool selection, Hit = 2D grasp hit rate, AFR = antipodal feasibility rate, and Dev. = grasp deviation.</p>
 
-    <h3>Table I · Prompt Ablation Results</h3>
-    <p>Richer context generally improves spatial grounding, but the best prompt is scenario-dependent. P2/P3 are strongest for wall retrieval, P3 is preferred for screwdriver insertion when explainable handle reasoning is needed, and P2 is the safest option for shelf retrieval.</p>
+    <h3>Table I · Wall Retrieval Ablation</h3>
+    <p>Wall retrieval strongly benefits from explicit anti-failure guidance. P3 gives the highest hit rate and the lowest deviation in every reported setting.</p>
     <div class="table-wrap">
       <table>
         <thead>
-          <tr><th>Scenario</th><th>Prompt</th><th>Description</th><th>Tool Acc.</th><th>Hit</th><th>AFR</th><th>Var</th></tr>
+          <tr><th>Model</th><th>Mode</th><th>Prompt</th><th>Tool</th><th>Hit</th><th>AFR</th><th>Dev.</th></tr>
         </thead>
         <tbody>
-          <tr><td rowspan="4">Wall</td><td><span class="method-tag">P0</span></td><td>Minimal</td><td>1.00</td><td>0.00</td><td>0.00</td><td>290 mm</td></tr>
-          <tr><td><span class="method-tag">P1</span></td><td>Structured</td><td>1.00</td><td>0.00</td><td>0.13</td><td>151 mm</td></tr>
-          <tr><td><span class="method-tag best-tag">P2 ★</span></td><td>Scenario-aware</td><td>1.00</td><td>0.80</td><td>0.80</td><td>36 mm</td></tr>
-          <tr><td><span class="method-tag best-tag">P3 ★</span></td><td>Anti-failure</td><td>0.93</td><td>0.80</td><td>0.80</td><td>21 mm</td></tr>
-
-          <tr><td rowspan="4">Screwdriver</td><td><span class="method-tag">P0</span></td><td>Minimal</td><td>1.00</td><td>0.87</td><td>0.60</td><td>17.0 mm</td></tr>
-          <tr><td><span class="method-tag">P1</span></td><td>Structured</td><td>1.00</td><td>0.67</td><td>0.67</td><td>0.0 mm</td></tr>
-          <tr><td><span class="method-tag">P2</span></td><td>Scenario-aware</td><td>1.00</td><td>0.40</td><td>0.47</td><td>5.1 mm</td></tr>
-          <tr><td><span class="method-tag best-tag">P3 ★</span></td><td>Anti-failure</td><td>1.00</td><td>0.67</td><td>0.67</td><td>0.0 mm</td></tr>
-
-          <tr><td rowspan="4">Shelf</td><td><span class="method-tag">P0</span></td><td>Minimal</td><td>1.00</td><td>1.00</td><td>1.00</td><td>&lt;1 px</td></tr>
-          <tr><td><span class="method-tag">P1</span></td><td>Structured</td><td>1.00</td><td>0.67</td><td>1.00</td><td>70.9 px</td></tr>
-          <tr class="row-highlight"><td><span class="method-tag best-tag">P2 ★</span></td><td>Scenario-aware</td><td>1.00</td><td>1.00</td><td>1.00</td><td>&lt;1 px</td></tr>
-          <tr><td><span class="method-tag best-tag">P3 ★</span></td><td>Anti-failure</td><td>1.00</td><td>1.00</td><td>1.00</td><td>&lt;1 px</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P0</span></td><td>0.57</td><td>0.00</td><td>0.07</td><td>210.2 mm</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P1</span></td><td>0.67</td><td>0.00</td><td>0.08</td><td>231.5 mm</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P2</span></td><td>0.73</td><td>0.13</td><td>0.20</td><td>160.6 mm</td></tr>
+          <tr class="row-highlight"><td>4o</td><td>Ann.</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.93</td><td>0.87</td><td>0.87</td><td>32.8 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P0</span></td><td>0.73</td><td>0.00</td><td>0.00</td><td>220.4 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P1</span></td><td>0.72</td><td>0.29</td><td>0.29</td><td>220.3 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P2</span></td><td>0.87</td><td>0.00</td><td>0.00</td><td>245.7 mm</td></tr>
+          <tr class="row-highlight"><td>4o</td><td>Raw</td><td><span class="method-tag best-tag">P3 ★</span></td><td>1.00</td><td>1.00</td><td>0.93</td><td>17.6 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P0</span></td><td>0.90</td><td>0.20</td><td>0.07</td><td>119.1 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P1</span></td><td>0.70</td><td>0.20</td><td>0.00</td><td>131.9 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P2</span></td><td>0.77</td><td>0.07</td><td>0.07</td><td>185.2 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.95</td><td>0.73</td><td>0.33</td><td>7.1 mm</td></tr>
         </tbody>
       </table>
     </div>
 
-    <h3>Metrics</h3>
-    <div class="metric-list">
-      <div class="metric-card"><strong>Tool Selection Accuracy</strong><span>Fraction of runs selecting the correct tool cluster.</span></div>
-      <div class="metric-card"><strong>Grasp Region Hit Rate</strong><span>Fraction of refined grasp points inside the ground-truth handle region.</span></div>
-      <div class="metric-card"><strong>Tool-Only Crop Ratio</strong><span>Fraction of local crop points belonging to the selected tool.</span></div>
-      <div class="metric-card"><strong>Antipodal Feasibility Rate</strong><span>Fraction of runs where a valid antipodal grasp pair is found.</span></div>
-      <div class="metric-card"><strong>Grasp Center Variance</strong><span>Mean deviation of grasp centers across repeated VLM calls.</span></div>
-      <div class="metric-card"><strong>Region Label Consistency</strong><span>Majority fraction of the VLM's predicted grasp-region label.</span></div>
+    <h3>Table II · Screwdriver Insertion Ablation</h3>
+    <p>Screwdriver insertion improves progressively from P0 to P3. Minimal prompts can produce very large deviations, while P2/P3 substantially stabilize spatial localization.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Model</th><th>Mode</th><th>Prompt</th><th>Tool</th><th>Hit</th><th>AFR</th><th>Dev.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P0</span></td><td>0.70</td><td>0.10</td><td>0.20</td><td>47969.0 mm</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P1</span></td><td>0.67</td><td>0.10</td><td>0.65</td><td>71.2 mm</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P2</span></td><td>0.80</td><td>0.67</td><td>0.65</td><td>1.1 mm</td></tr>
+          <tr class="row-highlight"><td>4o</td><td>Ann.</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.80</td><td>0.83</td><td>0.65</td><td>0.2 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P0</span></td><td>0.52</td><td>0.03</td><td>0.13</td><td>27037.0 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P1</span></td><td>0.50</td><td>0.15</td><td>0.20</td><td>215.7 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P2</span></td><td>0.70</td><td>0.46</td><td>0.37</td><td>37.4 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.71</td><td>0.60</td><td>0.49</td><td>4.5 mm</td></tr>
+          <tr><td>4o-mini</td><td>Raw</td><td><span class="method-tag">P0</span></td><td>0.06</td><td>0.04</td><td>0.20</td><td>3252.4 mm</td></tr>
+          <tr><td>4o-mini</td><td>Raw</td><td><span class="method-tag">P1</span></td><td>0.56</td><td>0.30</td><td>0.37</td><td>48.7 mm</td></tr>
+          <tr><td>4o-mini</td><td>Raw</td><td><span class="method-tag">P2</span></td><td>0.82</td><td>0.54</td><td>0.68</td><td>16.1 mm</td></tr>
+          <tr><td>4o-mini</td><td>Raw</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.74</td><td>0.72</td><td>0.69</td><td>8.0 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P0</span></td><td>0.72</td><td>0.17</td><td>0.43</td><td>1652.0 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P1</span></td><td>0.69</td><td>0.32</td><td>0.49</td><td>38.3 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P2</span></td><td>0.74</td><td>0.67</td><td>0.56</td><td>8.5 mm</td></tr>
+          <tr class="row-highlight"><td>4o-mini</td><td>Ann.</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.81</td><td>0.83</td><td>0.77</td><td>0.7 mm</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Table III · Shelf Retrieval Ablation</h3>
+    <p>Shelf retrieval is the hardest setting because the model must identify both the correct tool region and the functional end for sweeping. P3 improves tool selection and reduces deviation across all reported shelf settings.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Model</th><th>Mode</th><th>Prompt</th><th>Tool</th><th>Hit</th><th>AFR</th><th>Dev.</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P0</span></td><td>0.42</td><td>0.25</td><td>0.07</td><td>136.7 mm</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P1</span></td><td>0.65</td><td>0.30</td><td>0.05</td><td>147.7 mm</td></tr>
+          <tr><td>4o</td><td>Ann.</td><td><span class="method-tag">P2</span></td><td>0.70</td><td>0.05</td><td>0.07</td><td>186.5 mm</td></tr>
+          <tr class="row-highlight"><td>4o</td><td>Ann.</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.90</td><td>0.65</td><td>0.07</td><td>56.1 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P0</span></td><td>0.62</td><td>0.15</td><td>0.04</td><td>112.1 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P1</span></td><td>0.70</td><td>0.20</td><td>0.02</td><td>132.1 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag">P2</span></td><td>0.70</td><td>0.05</td><td>0.07</td><td>186.5 mm</td></tr>
+          <tr><td>4o</td><td>Raw</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.90</td><td>0.55</td><td>0.06</td><td>56.1 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P0</span></td><td>0.78</td><td>0.20</td><td>0.05</td><td>125.1 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P1</span></td><td>0.76</td><td>0.30</td><td>0.00</td><td>149.1 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag">P2</span></td><td>0.79</td><td>0.07</td><td>0.07</td><td>191.5 mm</td></tr>
+          <tr><td>4o-mini</td><td>Ann.</td><td><span class="method-tag best-tag">P3 ★</span></td><td>0.90</td><td>0.55</td><td>0.27</td><td>28.1 mm</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>End-to-End CoT Rollout Ablation</h3>
+    <p>Structured CoT has the strongest impact in the shelf scenario, where success improves from 3/10 to 6/10. The improvement comes mainly from fewer functional contact-point failures.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Scenario</th><th>With CoT</th><th>Without CoT</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Wall retrieval</td><td>8 / 10</td><td>7 / 10</td></tr>
+          <tr><td>Screwdriver insertion</td><td>7 / 10</td><td>7 / 10</td></tr>
+          <tr class="row-highlight"><td>Shelf retrieval</td><td>6 / 10</td><td>3 / 10</td></tr>
+        </tbody>
+      </table>
     </div>
 
     <h3>Shelf Rollout Analysis</h3>
@@ -712,17 +768,17 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
       </div>
       <div class="result-note">
         <h4>Before CoT</h4>
-        <p>Before adding the Chain-of-Thought reasoning, only 3 out of 10 shelf rollouts were successful. The main failure mode was spatial myopia: C was often predicted near the grasp region instead of the distal contact tip. In those failures, 2 came from the wrong A–B edge pair and 5 came from incorrect C-point selection.</p>
+        <p>Before adding Chain-of-Thought reasoning, only 3 out of 10 shelf rollouts were successful. The main failure mode was spatial myopia: C was often predicted near the grasp region instead of the distal contact tip. In those failures, 2 came from the wrong A–B edge pair and 5 came from incorrect C-point selection.</p>
       </div>
     </div>
 
     <div class="shelf-rollout-table-wrap">
       <table class="shelf-rollout-table">
-        <caption>Table II: Shelf-Retrieval End-to-End Rollout Analysis (10 rollouts, P2)</caption>
+        <caption>Table IV: Shelf Failure Breakdown (10 rollouts)</caption>
         <thead>
           <tr>
             <th></th>
-            <th>With CoT (P2)</th>
+            <th>With CoT</th>
             <th>Without CoT</th>
           </tr>
         </thead>
@@ -758,20 +814,22 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
     <div class="scenario-grid extra-video-grid">
       <div class="rollout-card">
         <video class="rollout-video" controls muted playsinline preload="metadata">
-          <source src="result_best_p3_demo.mp4" type="video/mp4">
+          <source src="screwdriver_wrongwaypoint.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
         <div class="rollout-info">
-          <h4>Best Prompt Demo</h4>
+          <h4>Screwdriver Wrong Waypoint</h4>
+          <p>Failure case where the VLM predicts an incorrect waypoint for screwdriver insertion, causing the tool tip to approach the target with the wrong spatial alignment.</p>
         </div>
       </div>
       <div class="rollout-card">
         <video class="rollout-video" controls muted playsinline preload="metadata">
-          <source src="result_failure_cases.mp4" type="video/mp4">
+          <source src="wall_wrongtool.mp4" type="video/mp4">
           Your browser does not support the video tag.
         </video>
         <div class="rollout-info">
-          <h4>Failure / Ablation Cases</h4>
+          <h4>Wall Wrong Tool Selection</h4>
+          <p>Failure case where the VLM selects an unsuitable tool for the wall-retrieval task, preventing the robot from correctly pulling the target object into the reachable workspace.</p>
         </div>
       </div>
     </div>
@@ -779,20 +837,20 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
     <h3>Key Findings</h3>
     <div class="result-note-grid">
       <div class="result-note">
-        <h4>Cluster labels make tool selection stable</h4>
-        <p>With annotated DBSCAN clusters, tool selection is almost trivial across all scenarios: all prompts reach 1.00 tool accuracy except one P3 wall outlier.</p>
+        <h4>Structured CoT targets functional contact localization</h4>
+        <p>The main shelf gain comes from reducing C-placement failures from 5 to 2; the A–B edge-pair error stays at 2 failures in both settings.</p>
       </div>
       <div class="result-note">
-        <h4>Wall retrieval needs coordinate grounding</h4>
-        <p>P0/P1 fail to hit the handle region, while P2/P3 raise hit rate to 0.80 and reduce variance from 290 mm to 21–36 mm.</p>
+        <h4>Cluster labels reduce ungrounded coordinate regression</h4>
+        <p>DBSCAN-derived labels and cluster summaries anchor the VLM to candidate tool regions, converting raw coordinate regression into selection-then-localization.</p>
       </div>
       <div class="result-note">
-        <h4>P1 is unreliable</h4>
-        <p>P1 fails completely in the wall case and is the weakest shelf prompt because its structured field can push the grasp point off the tool for some orientations.</p>
+        <h4>Shelf retrieval is the hardest scenario</h4>
+        <p>The shelf task requires relational geometry over A, B, grasp G, and functional contact C, making it more sensitive to spatial myopia than wall or screwdriver tasks.</p>
       </div>
       <div class="result-note">
-        <h4>Prompt choice is scenario-dependent</h4>
-        <p>P2 is strongest when calibrated coordinate hints are available, while P3 is useful when explainable spatial reasoning and self-checking are more important.</p>
+        <h4>Execution remains mostly open-loop</h4>
+        <p>Once the KOMO trajectory is generated, the system does not yet re-plan after unexpected slip or contact; closed-loop recovery is a natural next step.</p>
       </div>
     </div>
   </div>
@@ -805,8 +863,8 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
     <div class="bibtex-box">
       <pre><span class="bib-key">@inproceedings</span>{belen2026toolmind,
   <span class="bib-field">title</span>     = {<span class="bib-val">ToolMind: VLM-Guided Spatial Reasoning for Robotic Tool Use</span>},
-  <span class="bib-field">author</span>    = {<span class="bib-val">Belen, Süleyman Talha and Yazıcıoğlu, Yusuf Buğra and
-               Kök, Yunus Emre and Yakşi, Mehmet Emin</span>},
+  <span class="bib-field">author</span>    = {<span class="bib-val">Belen, Süleyman Talha and Kök, Yunus Emre and
+               Yazıcıoğlu, Yusuf Buğra and Yakşi, Mehmet Emin</span>},
   <span class="bib-field">booktitle</span> = {<span class="bib-val">CS 449 Final Report, Bilkent University</span>},
   <span class="bib-field">year</span>      = {<span class="bib-val">2026</span>},
 }</pre>

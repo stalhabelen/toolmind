@@ -272,7 +272,6 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
       <a href="https://www.linkedin.com/in/mehmet-emin-yakşi-22983a225/" target="_blank" rel="noopener noreferrer">Mehmet Emin Yakşi</a>
     </p>
     <p class="affiliations">Department of Electrical and Electronics Engineering, Bilkent University</p>
-    <p class="author-note"><a href="https://github.com/stalhabelen" target="_blank" rel="noopener noreferrer">github.com/stalhabelen</a></p>
     <div class="btn-row">
       <a class="btn primary" href="FinalReportCS449.pdf" target="_blank" rel="noopener noreferrer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
@@ -667,7 +666,7 @@ footer p { font-size: 13px; color: #aaa; margin-bottom: 4px; }
 <section id="results">
   <div class="container">
     <h2>Results</h2>
-    <p style="text-align:center; color:#666; max-width:720px; margin:0 auto;">We evaluate prompt detail, visual cluster grounding, and model size. Annotated mode uses DBSCAN-derived labels and bounding boxes, while raw mode removes these anchors. Metrics follow the final report: Tool = correct tool selection, Hit = 2D grasp hit rate, AFR = antipodal feasibility rate, and Dev. = grasp deviation.</p>
+    <p style="text-align:center; color:#666; max-width:720px; margin:0 auto;">Each scenario ablation is run as 3 scene variants × 4 prompts × 5 repeats = 60 VLM calls. We evaluate prompt detail, visual cluster grounding, and model size. Annotated mode uses DBSCAN-derived labels and bounding boxes, while raw mode removes these anchors. Metrics follow the final report: Tool = correct tool selection, Hit = 2D grasp hit rate, AFR = antipodal feasibility rate, and Dev. = grasp deviation.</p>
 
     <h3>Table I · Wall Retrieval Ablation</h3>
     <p>Wall retrieval strongly benefits from explicit anti-failure guidance. P3 gives the highest hit rate and the lowest deviation in every reported setting.</p>
